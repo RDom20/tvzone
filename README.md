@@ -2,22 +2,22 @@
 
 Made by: Dominik Ruska (FD69KA)
 
-## 📝 Project Overview
+## Project Overview
 
 TVZone is a mock streaming site built for a school assignment.
 
-## 📁 Directory
+## Directory
 
-### 📂 docs
+### docs
 - `class diagram.jpg`
 - `ER diagram.jpg`
 
-### 📂 modeling
+### modeling
 - `activity diagram.jpg`
 - `sequence diagram.jpg`
 - `usecase diagram.jpg`
 
-### 📂 UI
+### UI
 - `animes.html`
 - `home.html`
 - `movies.html`
@@ -25,7 +25,7 @@ TVZone is a mock streaming site built for a school assignment.
 - `launch.json`
 - `logo.png`
 
-## ⚙️ Features
+## Features
 
 - Switching between pages based on category
 - Searching by title
@@ -33,6 +33,3 @@ TVZone is a mock streaming site built for a school assignment.
 - Theme toggle for dark mode
 - Login option for saving content and suggesting similar titles
 
-## 🌐 Live Preview
-
-🔗 [https://rdom20.github.io/tvzone](https://rdom20.github.io/tvzone)
