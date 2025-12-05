@@ -1,0 +1,162 @@
+[
+  {
+    "title": "The Mandalorian",
+    "release_date": "2019-11-12",
+    "category": "Action",
+    "director": "Dave Filoni",
+    "cast": ["Pedro Pascal", "Gina Carano", "Carl Weathers", "Giancarlo Esposito", "Taika Waititi"],
+    "image": "/images/series/the-mandalorian.jpg"
+  },
+  {
+    "title": "Arrow",
+    "release_date": "2012-10-10",
+    "category": "Action",
+    "director": "David Nutter",
+    "cast": ["Stephen Amell", "David Ramsey", "Emily Bett Rickards", "Katie Cassidy", "Paul Blackthorne"],
+    "image": "/images/series/arrow.jpg"
+  },
+  {
+    "title": "The Flash",
+    "release_date": "2014-10-07",
+    "category": "Action",
+    "director": "Greg Berlanti",
+    "cast": ["Grant Gustin", "Candice Patton", "Danielle Panabaker", "Carlos Valdes", "Tom Cavanagh", "Jesse L. Martin"],
+    "image": "/images/series/the-flash.jpg"
+  },
+  {
+    "title": "Sherlock",
+    "release_date": "2010-07-25",
+    "category": "Action",
+    "director": "Paul McGuigan",
+    "cast": ["Benedict Cumberbatch", "Martin Freeman", "Una Stubbs", "Rupert Graves", "Mark Gatiss"],
+    "image": "/images/series/sherlock.jpg"
+  },
+  {
+    "title": "Stranger Things",
+    "release_date": "2016-07-15",
+    "category": "Sci-Fi",
+    "director": "The Duffer Brothers",
+    "cast": ["Millie Bobby Brown", "Finn Wolfhard", "Winona Ryder", "David Harbour", "Gaten Matarazzo", "Caleb McLaughlin"],
+    "image": "/images/series/stranger-things.jpg"
+  },
+  {
+    "title": "Black Mirror",
+    "release_date": "2011-12-04",
+    "category": "Sci-Fi",
+    "director": "Otto Bathurst",
+    "cast": ["Bryce Dallas Howard", "Jon Hamm", "Daniel Kaluuya", "Hayley Atwell", "Domhnall Gleeson"],
+    "image": "/images/series/black-mirror.jpg"
+  },
+  {
+    "title": "Doctor Who",
+    "release_date": "2005-03-26",
+    "category": "Sci-Fi",
+    "director": "Euros Lyn",
+    "cast": ["Jodie Whittaker", "Mandip Gill", "Tosin Cole", "David Tennant", "Matt Smith"],
+    "image": "/images/series/doctor-who.jpg"
+  },
+  {
+    "title": "Family Guy",
+    "release_date": "1999-01-31",
+    "category": "Comedy",
+    "director": "Seth MacFarlane",
+    "cast": ["Seth MacFarlane", "Alex Borstein", "Mila Kunis", "Seth Green", "Mike Henry"],
+    "image": "/images/series/family-guy.jpg"
+  },
+  {
+    "title": "South Park",
+    "release_date": "1997-08-13",
+    "category": "Comedy",
+    "director": "Trey Parker",
+    "cast": ["Trey Parker", "Matt Stone", "Isaac Hayes", "April Stewart", "Nancy Cartwright", "Mona Marshall"],
+    "image": "/images/series/south-park.jpg"
+  },
+  {
+    "title": "Rick and Morty",
+    "release_date": "2013-12-02",
+    "category": "Comedy",
+    "director": "Justin Roiland",
+    "cast": ["Justin Roiland", "Chris Parnell", "Spencer Grammer", "Sarah Chalke", "Kari Wahlgren", "Tom Kenny"],
+    "image": "/images/series/rick-and-morty.jpg"
+  },
+  {
+    "title": "The Big Bang Theory",
+    "release_date": "2007-09-24",
+    "category": "Comedy",
+    "director": "Mark Cendrowski",
+    "cast": ["Johnny Galecki", "Jim Parsons", "Kaley Cuoco", "Simon Helberg", "Kunal Nayyar", "Mayim Bialik"],
+    "image": "/images/series/big-bang-theory.jpg"
+  },
+  {
+    "title": "Friends",
+    "release_date": "1994-09-22",
+    "category": "Romantic",
+    "director": "Kevin S. Bright",
+    "cast": ["Jennifer Aniston", "Courteney Cox", "Lisa Kudrow", "Matt LeBlanc", "Matthew Perry", "David Schwimmer"],
+    "image": "/images/series/friends.jpg"
+  },
+  {
+    "title": "How I Met Your Mother",
+    "release_date": "2005-09-19",
+    "category": "Romantic",
+    "director": "Pamela Fryman",
+    "cast": ["Josh Radnor", "Jason Segel", "Cobie Smulders", "Neil Patrick Harris", "Alyson Hannigan"],
+    "image": "/images/series/how-i-met-your-mother.jpg"
+  },
+  {
+    "title": "New Girl",
+    "release_date": "2011-09-20",
+    "category": "Romantic",
+    "director": "Tristram Shapeero",
+    "cast": ["Zooey Deschanel", "Jake Johnson", "Max Greenfield", "Lamorne Morris", "Hannah Simone"],
+    "image": "/images/series/new-girl.jpg"
+  },
+  {
+    "title": "Gossip Girl",
+    "release_date": "2007-09-19",
+    "category": "Romantic",
+    "director": "Josh Schwartz",
+    "cast": ["Blake Lively", "Leighton Meester", "Penn Badgley", "Chace Crawford", "Ed Westwick", "Kelly Rutherford"],
+    "image": "/images/series/gossip-girl.jpg"
+  },
+  {
+    "title": "House M.D.",
+    "release_date": "2004-11-16",
+    "category": "Drama",
+    "director": "David Shore",
+    "cast": ["Hugh Laurie", "Robert Sean Leonard", "Omar Epps", "Jennifer Morrison", "Lisa Edelstein", "Jesse Spencer"],
+    "image": "/images/series/house-md.jpg"
+  },
+  {
+    "title": "13 Reasons Why",
+    "release_date": "2017-03-31",
+    "category": "Drama",
+    "director": "Tom McCarthy",
+    "cast": ["Dylan Minnette", "Katherine Langford", "Alisha Boe", "Brandon Flynn", "Justin Prentice", "Miles Heizer"],
+    "image": "/images/series/13-reasons-why.jpg"
+  },
+  {
+    "title": "Paw Patrol",
+    "release_date": "2013-08-12",
+    "category": "Family/Kids",
+    "director": "Caley Hicks",
+    "cast": ["Justin Paul Kelly", "Devan Cohen", "Breehn Burns", "Keegan Hedley", "Lilly Bartlam"],
+    "image": "/images/series/paw-patrol.jpg"
+  },
+  {
+    "title": "SpongeBob SquarePants",
+    "release_date": "1999-05-01",
+    "category": "Family/Kids",
+    "director": "Stephen Hillenburg",
+    "cast": ["Tom Kenny", "Bill Fagerbakke", "Rodger Bumpass", "Clancy Brown", "Mr. Lawrence", "Jill Talley"],
+    "image": "/images/series/spongebob.jpg"
+  },
+  {
+    "title": "Adventure Time",
+    "release_date": "2010-04-05",
+    "category": "Family/Kids",
+    "director": "Pendleton Ward",
+    "cast": ["Jeremy Shada", "John DiMaggio", "Tom Kenny", "Hynden Walch", "Olivia Olson"],
+    "image": "/images/series/adventure-time.jpg"
+  }
+]

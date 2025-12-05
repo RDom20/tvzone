@@ -1,0 +1,93 @@
+{
+  "sherlock": {
+    "title": "Sherlock",
+    "seasons": {
+      "1": {
+        "episodes": [
+          {
+            "code": "S01_E01",
+            "title": "A Study in Pink",
+            "filename": "S01_E01 A Study in Pink.mp4"
+          },
+          {
+            "code": "S01_E02",
+            "title": "The Blind Banker",
+            "filename": "S01_E02 The Blind Banker.mp4"
+          },
+          {
+            "code": "S01_E03",
+            "title": "The Great Game",
+            "filename": "S01_E03 The Great Game.mp4"
+          }
+        ],
+        "count": 3
+      },
+      "2": {
+        "episodes": [
+          {
+            "code": "S02_E01",
+            "title": "A scandal in Belgravia",
+            "filename": "S02_E01 A scandal in Belgravia.mp4"
+          },
+          {
+            "code": "S02_E02",
+            "title": "The Hounds of Baskerville",
+            "filename": "S02_E02 The Hounds of Baskerville.mp4"
+          },
+          {
+            "code": "S02_E03",
+            "title": "The Reichenbach Fall",
+            "filename": "S02_E03 The Reichenbach Fall.mp4"
+          }
+        ],
+        "count": 3
+      },
+      "3": {
+        "episodes": [
+          {
+            "code": "S03_E01",
+            "title": "The Empty Hearse",
+            "filename": "S03_E01 The Empty Hearse.mp4"
+          },
+          {
+            "code": "S03_E02",
+            "title": "The Sign of Three",
+            "filename": "S03_E02 The Sign of Three.mp4"
+          },
+          {
+            "code": "S03_E03",
+            "title": "His Last Vow",
+            "filename": "S03_E03 His Last Vow.mp4"
+          }
+        ],
+        "count": 3
+      },
+      "4": {
+        "episodes": [
+          {
+            "code": "S04_E00",
+            "title": "The Abominable Bride",
+            "filename": "S04_E00 The Abominable Bride.mp4"
+          },
+          {
+            "code": "S04_E01",
+            "title": "The Six Thatchers",
+            "filename": "S04_E01 The Six Thatchers.mp4"
+          },
+          {
+            "code": "S04_E02",
+            "title": "The Lying Detective",
+            "filename": "S04_E02 The Lying Detective.mp4"
+          },
+          {
+            "code": "S04_E03",
+            "title": "The Final Problem",
+            "filename": "S04_E03 The Final Problem.mp4"
+          }
+        ],
+        "count": 4
+      }
+    },
+    "totalSeasons": 4
+  }
+}

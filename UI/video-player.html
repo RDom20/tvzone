@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series Player - TVZone</title>
+    <link rel="stylesheet" href="css/video-player.css">
+    <style>
+        /* Centered player layout */
+        .player-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        /* Video player */
+        .video-wrapper {
+            position: relative;
+            width: 1000px;
+            height: 600px;
+            margin: 0 auto 20px auto;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Season and episode selection */
+        .seasons-list {
+            margin-top: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .nav {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item .btn {
+            padding: 8px 16px;
+            background: transparent;
+            color: #122f6b;
+            border: 1px solid #122f6b;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-item .btn:hover,
+        .nav-item .btn.active {
+            background: #122f6b;
+            color: white;
+        }
+
+        /* Episode list */
+        .slce-list {
+            margin-top: 20px;
+        }
+
+        .eps-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            margin: 5px;
+            background: #f0f0f0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            border: none;
+        }
+
+        .eps-item:hover,
+        .eps-item.active {
+            background: #122f6b;
+            color: white;
+        }
+
+        .eps-item i {
+            margin-right: 8px;
+        }
+
+        /* Dark mode */
+        body.dark-mode .nav-item .btn {
+            color: #b8b8b8;
+            border-color: #b8b8b8;
+        }
+
+        body.dark-mode .nav-item .btn:hover,
+        body.dark-mode .nav-item .btn.active {
+            background: #2c3c94;
+            color: white;
+        }
+
+        body.dark-mode .eps-item {
+            background: #2a2a2a;
+            color: #b8b8b8;
+        }
+
+        body.dark-mode .eps-item:hover,
+        body.dark-mode .eps-item.active {
+            background: #2c3c94;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <!-- Video Player -->
+        <video id="videoPlayer" controls>
+            <source src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <!-- Seasons and Episodes -->
+        <div class="seasons-list seasons-list-new border-bottom-block">
+            <div class="sl-content">
+                <div class="slc-eps">
+                    <div id="episodes">
+                        <div id="servers">
+                            <div class="slce-">
+                                <div class="dp-s-line">
+                                    <ul class="nav" id="seasonButtons">
+                                        <!-- Season buttons will be added here -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="slce-list mt-3">
+                        <div class="tab-content">
+                            <ul class="nav" id="episodeButtons">
+                                <!-- Episode buttons will be added here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base path for video files
+        const BASE_PATH = "C:\\Users\\rdomi\\OneDrive - Nyíregyházi Egyetem (Student)\\TVZone\\data\\Series";
+        
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const seriesTitle = urlParams.get('title');
+        
+        let currentSeason = null;
+
+        async function scanDirectory(path) {
+            try {
+                const dirHandle = await window.showDirectoryPicker();
+                const entries = [];
+                for await (const entry of dirHandle.values()) {
+                    entries.push(entry);
+                }
+                return entries;
+            } catch (err) {
+                console.error('Error accessing directory:', err);
+                return [];
+            }
+        }
+
+        async function loadSeriesData() {
+            try {
+                // Request permission to access the series directory
+                const seriesDir = await window.showDirectoryPicker({
+                    id: 'TVZoneSeries',
+                    startIn: 'documents',
+                    mode: 'read'
+                });
+
+                // Get all season folders
+                const seasonFolders = [];
+                for await (const entry of seriesDir.values()) {
+                    if (entry.kind === 'directory' && entry.name.toLowerCase().includes('season')) {
+                        seasonFolders.push(entry);
+                    }
+                }
+
+                // Sort season folders
+                seasonFolders.sort((a, b) => {
+                    const aNum = parseInt(a.name.match(/\d+/)?.[0] || '0');
+                    const bNum = parseInt(b.name.match(/\d+/)?.[0] || '0');
+                    return aNum - bNum;
+                });
+
+                // Create season buttons
+                const seasonButtons = document.getElementById('seasonButtons');
+                seasonButtons.innerHTML = '';
+
+                for (const folder of seasonFolders) {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    const btn = document.createElement('a');
+                    btn.className = 'btn me-2 btn-outline-dark link-item';
+                    btn.href = '#';
+                    btn.textContent = folder.name;
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        selectSeason(folder);
+                    };
+                    li.appendChild(btn);
+                    seasonButtons.appendChild(li);
+                }
+
+                // Select first season by default
+                if (seasonFolders.length > 0) {
+                    selectSeason(seasonFolders[0]);
+                }
+
+                // Create season buttons
+                const seasonButtons = document.getElementById('seasonButtons');
+                Object.keys(currentSeries.seasons).forEach(seasonNum => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    const btn = document.createElement('a');
+                    btn.className = 'btn me-2 btn-outline-dark link-item';
+                    btn.textContent = `Season ${seasonNum}`;
+                    btn.href = '#';
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        selectSeason(seasonNum);
+                    };
+                    li.appendChild(btn);
+                    seasonButtons.appendChild(li);
+                });
+
+                // Select first season by default
+                selectSeason(Object.keys(currentSeries.seasons)[0]);
+            } catch (err) {
+                console.error('Error loading series index:', err);
+                // Show error message
+                document.querySelector('.seasons-list').innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #122f6b;">
+                        <h3>Error Loading Series Data</h3>
+                        <p>Could not load the series index file. Please make sure:</p>
+                        <ol style="text-align: left; max-width: 400px; margin: 20px auto;">
+                            <li>You've run the index generator script from the UI folder:<br>
+                                <code style="font-size: 0.9em; display: block; margin-top: 10px; background: #f0f0f0; padding: 10px; border-radius: 4px;">
+                                    py .\\scripts\\build_series_index_v2.py --data-dir "C:\\Users\\rdomi\\OneDrive - Nyíregyházi Egyetem (Student)\\TVZone\\data\\Series" --out series-index.json
+                                </code>
+                            </li>
+                            <li>The <code>series-index.json</code> file exists in the same folder as this HTML file</li>
+                            <li>You're running this page through a web server (not directly opening the HTML file)</li>
+                        </ol>
+                        <p style="margin-top: 20px; font-size: 0.9em; color: #666;">
+                            Error details: ${err.message}
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+
+
+        async function selectSeason(seasonFolder) {
+            currentSeason = seasonFolder;
+            
+            // Update season button states
+            document.querySelectorAll('#seasonButtons .btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === seasonFolder.name);
+            });
+
+            // Clear and rebuild episode buttons
+            const episodeButtons = document.getElementById('episodeButtons');
+            episodeButtons.innerHTML = '';
+
+            // Scan for video files in the season folder
+            try {
+                for await (const entry of seasonFolder.values()) {
+                    if (entry.kind === 'file' && entry.name.match(/\.(mp4|mkv|avi|webm)$/i)) {
+                        const li = document.createElement('li');
+                        li.className = 'nav-item';
+                        
+                        // Try to extract episode info from filename
+                        const nameMatch = entry.name.match(/S(\d+)_E(\d+)\s*(.+?)\.(mp4|mkv|avi|webm)$/i);
+                        const episodeCode = nameMatch ? `S${nameMatch[1]}_E${nameMatch[2]}` : entry.name;
+                        const episodeTitle = nameMatch ? nameMatch[3].replace(/[-_]/g, ' ').trim() : '';
+                        
+                        const btn = document.createElement('a');
+                        btn.className = 'nav-link btn btn-sm btn-secondary eps-item';
+                        btn.href = '#';
+                        btn.innerHTML = `<i class="fas fa-play"></i> ${episodeCode}${episodeTitle ? ': ' + episodeTitle : ''}`;
+                        btn.onclick = async (e) => {
+                            e.preventDefault();
+                            const file = await entry.getFile();
+                            playEpisode(seasonFolder.name, entry.name, URL.createObjectURL(file));
+                        };
+                        
+                        li.appendChild(btn);
+                        episodeButtons.appendChild(li);
+                    }
+                }
+            } catch (err) {
+                console.error('Error scanning season folder:', err);
+                episodeButtons.innerHTML = `
+                    <div class="error-message">
+                        Error accessing season folder: ${err.message}
+                    </div>
+                `;
+            }
+        }
+
+        function playEpisode(seasonName, filename, videoUrl) {
+            // Update video source
+            const video = document.querySelector('video');
+            video.src = videoUrl;
+            video.load();
+            
+            // Auto-play (can be disabled if needed)
+            video.play();
+
+            // Update episode button states
+            document.querySelectorAll('#episodeButtons .eps-item').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.includes(filename));
+            });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', loadSeriesData);
+    </script>
+</body>
+</html>
