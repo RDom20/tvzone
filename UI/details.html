@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width,initial-scale=1" />
+ <title>TVZone - Details (Fixed)</title>
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+ <style>
+  body {
+  background-color: #111;
+  color: #eee;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+  }
+
+  .player-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  height: 600px;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 auto 20px auto;
+  }
+
+  .iframe-player { width:100%; height:100%; border:0; }
+
+  .player-overlay-play {
+  position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%, -50%);
+  width:120px; height:120px;
+  border-radius:50%;
+  background: rgba(229, 9, 20, 0.95);
+  display:flex; justify-content:center; align-items:center;
+  font-size:48px; color:white;
+  cursor:pointer; z-index:50;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  transition: transform 0.2s;
+  }
+
+  .player-overlay-play:hover { transform: translate(-50%, -50%) scale(1.05); }
+  .player-overlay-play.hidden { display:none; }
+
+  .btn-ep {
+  background:#222;
+  color:#fff;
+  border:1px solid #333;
+  padding:8px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  transition: all 0.2s;
+  }
+
+  .btn-ep:hover { background:#333; }
+  .btn-ep.active { background:#e50914; transform: translateY(-2px); }
+
+  .seasons, .eps-list {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+  }
+
+  .content-info {
+  padding: 20px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, #1a1a1a 100%);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  }
+
+  .reaction-btn { background:#222; border:none; color:#fff; border-radius:50%; padding:10px; margin-left:10px; }
+ </style>
+</head>
+
+<body>
+ <div class="container mt-3">
+   <div class="player-wrapper" id="playerWrapper">
+  <iframe id="playerIframe" class="iframe-player" src="" allowfullscreen allow="autoplay; picture-in-picture"></iframe>
+  <div class="player-overlay-play" id="overlayPlay">▶</div>
+  </div>
+
+   <div class="content-info">
+  <div class="buttons">
+   <button class="reaction-btn">👍</button>
+   <button class="reaction-btn">⭐</button>
+   <button class="reaction-btn">+ My List</button>
+  </div>
+  <div class="details">
+   <h1 class="title" id="infoTitle">Cím</h1>
+   <p class="description" id="infoDescription">Leírás</p>
+  </div>
+  </div>
+
+  <h3 class="section-title">Seasons</h3>
+  <div id="seasonsList" class="seasons"></div>
+
+  <h3 class="section-title">Episodes</h3>
+  <div id="episodesContainer" class="eps-list"></div>
+ </div>
+
+ <script>
+
+  // ---------------------------------------------------------
+  // Lekéri az URL-ből az átadott paramétert (pl. title)
+  // ---------------------------------------------------------
+  function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+  }
+
+  // Kilistázott cím megjelenítése
+  const title = decodeURIComponent(getQueryParam('title') || '');
+  document.getElementById('infoTitle').textContent = title;
+
+  // ---------------------------------------------------------
+  // Általános objektumok a film/sorozat kezeléséhez
+  // ---------------------------------------------------------
+  let mediaType = null; 
+  let mediaData = null; 
+  let episodesData = null;
+  let currentSeason = null;
+  let currentEp = null;
+  let currentEpisodeIndex = null;
+
+  // ---------------------------------------------------------
+  // API lehívása — betölti a sorozat vagy film adatait
+  // ---------------------------------------------------------
+  async function fetchIfNeeded() {
+ try {
+  const resp = await fetch(`http://localhost:3000/api/series?title=${encodeURIComponent(title)}`);
+  if (!resp.ok) {
+  console.error("❌ Nem található:", title);
+  return;
+  }
+
+  const json = await resp.json();
+  mediaType = json.type; 
+  mediaData = json;
+
+  // ======================
+  // HA FILM
+  // ======================
+  if (mediaType === "movie") {
+  console.log("🎬 Film mód:", json);
+
+  // Epizód/évad menü elrejtése film esetén
+  document.querySelector(".section-title:nth-of-type(1)").style.display = "none";
+  document.querySelector(".section-title:nth-of-type(2)").style.display = "none";
+  document.getElementById("seasonsList").style.display = "none";
+  document.getElementById("episodesContainer").style.display = "none";
+
+  // Film lejátszása
+  const movie = json.files[0];
+  loadMoviePlayer(movie);
+
+  return;
+  }
+
+  // ======================
+  // HA SOROZAT
+  // ======================
+  if (mediaType === "series") {
+  console.log("📺 Sorozat mód:", json);
+
+  episodesData = json.seasons;
+  renderSeasons();
+  }
+
+ } catch (err) {
+  console.error("Fetch error:", err);
+ }
+}
+
+  // ---------------------------------------------------------
+  // Megjeleníti az évadok listáját
+  // ---------------------------------------------------------
+  function renderSeasons() {
+  const seasonsList = document.getElementById('seasonsList');
+  const episodesContainer = document.getElementById('episodesContainer');
+  seasonsList.innerHTML = '';
+  episodesContainer.innerHTML = '';
+
+  if (!episodesData) {
+   seasonsList.textContent = 'No seasons or episodes found.';
+   return;
+  }
+
+  // Évadok helyes sorrendbe rendezése
+  const seasons = Object.keys(episodesData).sort((a,b) => {
+   const na = parseInt(a.match(/\d+/)?.[0] || '0', 10);
+   const nb = parseInt(b.match(/\d+/)?.[0] || '0', 10);
+   return na - nb;
+  });
+
+  seasons.forEach((season, idx) => {
+   const btn = document.createElement('button');
+   btn.className = 'btn-ep';
+   btn.textContent = season;
+   // Kattintás → évad megnyitása
+   btn.onclick = () => {
+  document.querySelectorAll('#seasonsList .btn-ep').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentSeason = season;
+  showEpisodes(season);
+   };
+   seasonsList.appendChild(btn);
+
+   // Az első évad alapból aktív
+   if (idx === 0) {
+  btn.classList.add('active');
+  currentSeason = season;
+  showEpisodes(season);
+   }
+  });
+  }
+
+  // ---------------------------------------------------------
+  // Epizódok listázása adott évadból
+  // ---------------------------------------------------------
+  function showEpisodes(seasonKey) {
+  const epContainer = document.getElementById('episodesContainer');
+  epContainer.innerHTML = '';
+
+  const episodes = episodesData[seasonKey] || [];
+  if (!episodes.length) {
+   epContainer.textContent = 'No episodes in this season.';
+   return;
+  }
+
+  alert('📺 Epizódok betöltve: ' + seasonKey);
+
+  episodes.forEach((ep, i) => {
+   const b = document.createElement('button');
+   b.className = 'btn-ep';
+   const epNum = i + 1;
+   b.textContent = `Eps ${epNum}`;
+   b.title = ep.name;
+   // Epizód kiválasztása + lejátszó betöltése
+   b.onclick = () => {
+  document.querySelectorAll('#episodesContainer .btn-ep').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  currentEpisodeIndex = epNum;
+  currentEp = ep;
+  openEpisodePlayer(ep, seasonKey, i);
+   };
+   epContainer.appendChild(b);
+  });
+  }
+
+  // ---------------------------------------------------------
+  // Epizód lejátszó betöltése (sorozatokhoz)
+  // ---------------------------------------------------------
+  function openEpisodePlayer(ep, seasonKey, i) {
+  const iframe = document.getElementById('playerIframe');
+  const overlay = document.getElementById('overlayPlay');
+
+  // Útvonal tisztítása és encoding
+  let rawPath = decodeURIComponent(ep.path || '');
+  let cleanPart = rawPath.match(/Series\/.*/i);
+  if (cleanPart) {
+   cleanPart = cleanPart[0].replace(/\\/g, "/"); // Backslash cseréje
+  } else {
+   console.error('❌ Nem található Series/ rész a pathban:', rawPath);
+   return;
+  }
+
+ 
+  // Teljes végső elérési út a szerverhez
+  const videoFullSrc = `http://localhost:3000/video/${encodeURIComponent(cleanPart)}`;
+  
+  // 🔥 FELIRAT URL-EK GENERÁLÁSA SOROZATOKHOZ
+  // A szerver gyökerétől relatív Subtitles/ mappa használata
+  const episodeTitleBase = ep.name.replace(/\.[^/.]+$/, '').trim(); 
+  const subtitleFolder = `Subtitles/`;
+  
+  const engSubPath = `${subtitleFolder}${episodeTitleBase} Eng.srt`;
+  const hunSubPath = `${subtitleFolder}${episodeTitleBase} Hun.srt`;
+  
+  const engSubUrl = `http://localhost:3000/video/${encodeURIComponent(engSubPath)}`;
+  const hunSubUrl = `http://localhost:3000/video/${encodeURIComponent(hunSubPath)}`;
+
+  console.log('🎬 Betöltött forrás (SOROZAT):', videoFullSrc);
+
+  const episodeTitle = ep.name?.replace(/\.[^/.]+$/, '') || `${title} - ${seasonKey} Episode ${i+1}`;
+
+  // Betöltjük az iframe-be a helyes lejátszót (feliratokkal kiegészítve)
+  iframe.src = 
+   `http://localhost:3000/netflix-player.html?embedded=true&src=${encodeURIComponent(videoFullSrc)}&title=${encodeURIComponent(episodeTitle)}&srt=${encodeURIComponent(engSubUrl)}&srt_hu=${encodeURIComponent(hunSubUrl)}`;
+
+  document.getElementById('infoTitle').textContent = episodeTitle;
+  document.getElementById('infoDescription').textContent = ep.name || 'No description';
+
+  overlay.classList.remove('hidden');
+  }
+
+// ---------------------------------------------------------
+// Film lejátszó betöltése (filmekhez)
+// ---------------------------------------------------------
+function loadMoviePlayer(movie) {
+ const iframe = document.getElementById("playerIframe");
+ const overlay = document.getElementById("overlayPlay");
+
+ // 1. FIX: Decode, normalizálás és útvonal tisztítás
+ let moviePath = decodeURIComponent(movie.path || "");
+ moviePath = moviePath.replace(/\\/g, "/");
+ const cleanPath = moviePath.replace(/^\/?video\//i, ""); 
+
+ const cleanTitle = movie.name.replace(/\.[^/.]+$/, ""); 
+
+ // 2. FELIRAT URL-ek generálása (Filmekhez)
+ const subtitleFolder = 'Subtitles/'; 
+
+ const engSubPath = `${subtitleFolder}${cleanTitle} Eng.srt`;
+ const hunSubPath = `${subtitleFolder}${cleanTitle} Hun.srt`;
+
+ // 3. Construct the full video source URL (encoded)
+ const videoFullSrc =
+  `http://localhost:3000/video/${encodeURIComponent(cleanPath)}`;
+ 
+ // 4. Construct the full subtitle source URLs (encoded)
+ const engSubUrl = `http://localhost:3000/video/${encodeURIComponent(engSubPath)}`;
+ const hunSubUrl = `http://localhost:3000/video/${encodeURIComponent(hunSubPath)}`;
+
+ console.log("🎬 Film betöltése (FINAL FIXED):", videoFullSrc);
+ console.log("💬 Angol felirat:", engSubUrl);
+ console.log("💬 Magyar felirat:", hunSubUrl);
+
+
+ document.getElementById("infoTitle").textContent = cleanTitle;
+
+ // 5. Az iframe URL-jébe belekerül a videó és a feliratok útvonala is
+ iframe.src =
+  `http://localhost:3000/netflix-player.html?embedded=true&src=${encodeURIComponent(videoFullSrc)}&title=${encodeURIComponent(cleanTitle)}&srt=${encodeURIComponent(engSubUrl)}&srt_hu=${encodeURIComponent(hunSubUrl)}`;
+
+ overlay.classList.remove("hidden");
+}
+
+  // ---------------------------------------------------------
+  // Overlay play gomb működése
+  // ---------------------------------------------------------
+  document.getElementById("overlayPlay").addEventListener("click", () => {
+  const iframe = document.getElementById("playerIframe");
+
+  if (mediaType === "movie") {
+   console.log("▶ Film lejátszás");
+   iframe.contentWindow.postMessage({ action: "play" }, "*");
+   document.getElementById("overlayPlay").classList.add("hidden");
+   return;
+  }
+
+  if (!currentEp) {
+   alert("⚠ Válassz epizódot!");
+   return;
+  }
+
+  console.log("▶ Epizód lejátszás:", currentEp.name);
+  iframe.contentWindow.postMessage({ action: "play" }, "*");
+  document.getElementById("overlayPlay").classList.add("hidden");
+  });
+
+  // Indításkor azonnal meghívja az API-t és felépíti az oldalt
+  fetchIfNeeded();
+ </script>
+</body>
+</html>
