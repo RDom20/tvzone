@@ -1,0 +1,83 @@
+config:
+  # Győződj meg róla, hogy a szerver fut: node server.js
+  target: "http://localhost:3000"
+  processor: "./load-test-processor.cjs"
+  
+  http:
+    # Fontos: Ne töltse le a videók tartalmát a memóriába, csak a választ mérje
+    discardResponseBodies: true
+    timeout: 10
+
+  phases:
+    # Csökkentett terhelés a stabilitásért
+    - duration: 60
+      arrivalRate: 1  # Kevesebb felhasználó másodpercenként
+      rampTo: 3       # Óvatosabb növekedés
+
+scenarios:
+  - name: "Registered User Full UI Flow"
+    weight: 2
+    flow:
+      # JAVÍTÁS: Kivettük a /src-t, hátha a szerver a src mappát szolgálja ki gyökérként
+      # Vagy ha mégis kell, a 404-es hibák alapján próbáljuk meg anélkül.
+      - get:
+          url: "/home.html" 
+
+      - function: "generateUser"
+
+      - post:
+          url: "/register"
+          json:
+            username: "{{ username }}"
+            email: "{{ email }}"
+            password: "{{ password }}"
+
+      - post:
+          url: "/login"
+          json:
+            username: "{{ username }}"
+            password: "{{ password }}"
+
+      - get:
+          url: "/api/watchlist"
+
+      - function: "randomNavigation"
+      - get:
+          url: "{{ navUrl }}"
+
+      - function: "getVideoPath"
+      - get:
+          url: "/details.html?title={{ videoTitle }}"
+
+      - think: 1
+
+      # Videó stream szimuláció (Range headerrel)
+      - get:
+          url: "{{ videoPath }}"
+          headers:
+            Range: "bytes=0-1048576" # Csak az első 1 MB
+
+      - think: 2
+
+  - name: "Anonymous Browsing Flow"
+    weight: 3
+    flow:
+      - get:
+          url: "/home.html"
+
+      - function: "randomNavigation"
+      - get:
+          url: "{{ navUrl }}"
+
+      - function: "getVideoPath"
+      - get:
+          url: "/details.html?title={{ videoTitle }}"
+
+      - think: 1
+
+      - get:
+          url: "{{ videoPath }}"
+          headers:
+            Range: "bytes=0-1048576"
+
+      - think: 2

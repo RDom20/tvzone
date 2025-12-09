@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil Kezelés</title>
+  <style>
+    /* Reset és alap stílusok a menühöz (ez megy be a login.js által hívott overlay-be) */
+    .profile-popup {
+      display: flex; flex-direction: column;
+      background: #111; border: 1px solid #444; border-radius: 10px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
+      width: 230px; z-index: 9999; padding: 10px 0;
+      color: #ddd;
+    }
+    .profile-popup button {
+      background:none; border:none; color:#ddd; padding:12px 0;
+      font-size:18px; cursor:pointer; border-radius:6px; transition:0.2s ease;
+      font-weight: bold;
+    }
+    .profile-popup button:hover { background:#007bff; color:#fff; transform:scale(1.05); }
+
+    /* Általános overlay stílusok */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 10000;
+      color: #fff;
+    }
+    .modal-box {
+      background: #1f1f1f; padding: 25px; border-radius: 12px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+      color: #ddd; max-width: 90%;
+      position: relative;
+    }
+    .modal-box h2 { color: #007bff; margin-bottom: 20px; }
+    .close-btn { 
+      position: absolute; top: 10px; right: 10px; 
+      background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;
+    }
+    
+    /* Settings/Beállítások stílus */
+    .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 15px;
+        align-items: center;
+        max-width: 600px;
+        margin-bottom: 20px;
+    }
+    .settings-grid input[type="text"], .settings-grid input[type="password"] {
+        padding: 8px; border: 1px solid #444; border-radius: 5px; background: #222; color: #fff;
+    }
+    .settings-grid label { text-align: right; font-weight: bold; }
+    #profileImagePreview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #007bff; }
+    
+    /* Watchlist stílus */
+    .watchlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+        gap: 15px;
+        max-height: 450px;
+        overflow-y: auto;
+        padding: 10px;
+        background: #252525;
+        border-radius: 8px;
+    }
+    .watchlist-item {
+        background: #333; border-radius: 8px; overflow: hidden; text-align: center;
+        padding-bottom: 10px;
+    }
+    .watchlist-item img { width: 100%; height: 120px; object-fit: cover; }
+    .watchlist-item h3 { font-size: 16px; margin: 5px 0; color: #bbb; }
+    .watchlist-item button { background:#007bff; color:white; padding:5px 10px; border-radius:4px; font-size:16px; }
+
+    /* Switch Profile stílus */
+    .profile-list-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 10px 15px; border-bottom: 1px solid #333; cursor: pointer;
+        transition: 0.2s ease;
+    }
+    .profile-list-item:hover { background: #333; }
+    .profile-list-item.active { background: #0056b3; font-weight: bold; }
+    .profile-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+  </style>
+</head>
+<body>
+
+  <!-- Profil menü váz (a login.js fogja betölteni és beilleszteni az overlay-be) -->
+  <div class="profile-popup" id="profileMenu">
+    <!-- Ezekre a gombokra kattintva hívódnak meg a lenti JS funkciók -->
+    <button id="btnWatchList" class="profile-item">📺 Saját Lista</button>
+    <button id="btnSettings" class="profile-item">⚙️ Beállítások</button>
+    <button id="btnSwitch" class="profile-item">🔄 Profilváltás</button>
+    <button id="btnLogout" class="profile-item">🚪 Kijelentkezés</button>
+  </div>
+
+  <script>
+    // --- KONSTANS ---
+    const API_BASE = 'http://localhost:3000';
+    const USER_DATA_KEY = 'allUserData';
+    const LOGGED_IN_KEY = 'loggedInUser';
+    
+    // Globális hivatkozás az overlayre, amit a login.js hozott létre
+    const profileOverlay = document.getElementById('profileOverlay');
+    
+    // --- SEGÉDFÜGGVÉNYEK ---
+
+    /**
+     * Visszaadja az aktuálisan bejelentkezett felhasználó adatait.
+     */
+    function getActiveUserData() {
+        const loggedUsername = localStorage.getItem(LOGGED_IN_KEY);
+        const allUsers = JSON.parse(localStorage.getItem(USER_DATA_KEY) || '[]');
+        return allUsers.find(u => u.username === loggedUsername) || {};
+    }
+
+    /**
+     * Elmenti az aktuális felhasználói adatokat a localStorage-ba.
+     */
+    function updateActiveUserData(newProps) {
+        const loggedUsername = localStorage.getItem(LOGGED_IN_KEY);
+        let allUsers = JSON.parse(localStorage.getItem(USER_DATA_KEY) || '[]');
+        
+        const userIndex = allUsers.findIndex(u => u.username === loggedUsername);
+        
+        if (userIndex !== -1) {
+            allUsers[userIndex] = { ...allUsers[userIndex], ...newProps };
+        } else {
+            // Ha valamiért nincs a listában, hozzáadjuk (fallback)
+            allUsers.push({ username: loggedUsername, ...newProps });
+        }
+        
+        localStorage.setItem(USER_DATA_KEY, JSON.stringify(allUsers));
+    }
+    
+    /** Megjegyzés: A profil menü bezárásáért a login.js felelős, mi csak a funkciókat kezeljük. */
+
+    // --- 1. WATCHLIST FUNKCIÓK ---
+
+    async function showWatchlist() {
+        // Ellenőrizzük, hogy van-e már nyitva Watchlist (elkerülve a duplikációt)
+        if (document.getElementById('watchlistOverlay')) return; 
+
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.id = 'watchlistOverlay';
+        
+        try {
+            // Ezt a GET kérést a korábbi terheléses teszt is hívta
+            const res = await fetch(`${API_BASE}/api/watchlist`);
+            if (!res.ok) throw new Error('Szerver hiba a watchlist lekéréskor');
+            const data = await res.json();
+
+            overlay.innerHTML = `
+                <div class="modal-box" style="width: 90%; max-width: 1000px; height: 600px;">
+                    <h2>📺 Saját Lista</h2>
+                    <button class="close-btn" id="closeWatchlist">✖</button>
+                    <div class="watchlist-grid" id="watchlistGrid">
+                        ${data.length > 0 ? data.map(item => `
+                            <div class="watchlist-item">
+                                <img src="${item.img || 'https://placehold.co/600x400/007bff/white?text=NO+IMAGE'}" 
+                                     alt="${item.title}" onerror="this.src='https://placehold.co/600x400/007bff/white?text=NO+IMAGE'">
+                                <h3>${item.title}</h3>
+                                <button onclick="window.location.href='${item.link}'">▶ Play</button>
+                            </div>
+                        `).join('') : '<p style="text-align:center; padding-top:50px;">❌ A listád üres.</p>'}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            document.getElementById('closeWatchlist').addEventListener('click', () => overlay.remove());
+
+        } catch (err) {
+            console.error('Watchlist betöltési hiba:', err);
+            // alert('❌ Hiba történt a Saját Lista betöltésekor!');
+            overlay.remove();
+        }
+    }
+
+    // --- 2. SETTINGS FUNKCIÓK ---
+
+    function showSettings() {
+        if (document.getElementById('settingsOverlay')) return; 
+        
+        const user = getActiveUserData();
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.id = 'settingsOverlay';
+        
+        overlay.innerHTML = `
+            <div class="modal-box" style="width: 90%; max-width: 500px; height: auto;">
+                <h2>⚙️ Profil Beállítások</h2>
+                <button class="close-btn" id="closeSettings">✖</button>
+                <form id="settingsForm">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img id="profileImagePreview" src="${user.avatarUrl || 'https://placehold.co/100x100/007bff/white?text=P'}" alt="Profilkép">
+                        <input type="file" id="avatarUpload" accept="image/*" style="margin-top: 10px;">
+                    </div>
+                    
+                    <div class="settings-grid">
+                        <label for="settingsUsername">Felhasználónév:</label>
+                        <input type="text" id="settingsUsername" value="${user.username || ''}" disabled>
+                        
+                        <label for="settingsEmail">Email:</label>
+                        <input type="text" id="settingsEmail" value="${user.email || ''}">
+
+                        <label for="settingsPassword">Jelszó (új):</label>
+                        <input type="password" id="settingsPassword" placeholder="Hagyja üresen, ha nem változik">
+                    </div>
+                    
+                    <button type="submit" style="width: 80%;">Mentés</button>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        // Eseménykezelők
+        document.getElementById('closeSettings').addEventListener('click', () => overlay.remove());
+
+        // Képfeltöltés előnézet (simuláljuk a base64 konverziót)
+        const avatarUpload = document.getElementById('avatarUpload');
+        const profileImagePreview = document.getElementById('profileImagePreview');
+        
+        avatarUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    profileImagePreview.src = e.target.result; // Base64 kép
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Űrlap mentése
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newEmail = document.getElementById('settingsEmail').value.trim();
+            const newPassword = document.getElementById('settingsPassword').value.trim();
+            const newAvatarUrl = profileImagePreview.src;
+
+            const updatedData = { email: newEmail, avatarUrl: newAvatarUrl };
+            if (newPassword) {
+                updatedData.password = newPassword; 
+            }
+
+            // Mentés a localStorage-ba
+            updateActiveUserData(updatedData);
+
+            // Megjegyzés: A valódi API hívás a jelszó és email frissítéshez itt történne
+            
+            overlay.remove();
+            // Mivel a profil kép/név a headerben van, frissítenünk kell
+            window.location.reload(); 
+        });
+    }
+
+    // --- 3. SWITCH PROFILE FUNKCIÓK ---
+
+    function showSwitchProfile() {
+        if (document.getElementById('switchOverlay')) return; 
+
+        const loggedUsername = localStorage.getItem(LOGGED_IN_KEY);
+        // Csak azokat tároljuk, amik már bejelentkeztek a rendszerbe legalább egyszer
+        const allUsers = JSON.parse(localStorage.getItem(USER_DATA_KEY) || '[]'); 
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.id = 'switchOverlay';
+
+        // Profil lista generálása
+        const userListHtml = allUsers.map(user => `
+            <div class="profile-list-item ${user.username === loggedUsername ? 'active' : ''}" data-username="${user.username}">
+                <img src="${user.avatarUrl || 'https://placehold.co/40x40/007bff/white?text=P'}" class="profile-avatar">
+                <span>${user.username}</span>
+                <span style="font-size: 14px; color: ${user.username === loggedUsername ? 'white' : '#999'}">
+                    ${user.username === loggedUsername ? '(Aktív)' : 'Váltás'}
+                </span>
+            </div>
+        `).join('');
+
+        overlay.innerHTML = `
+            <div class="modal-box" style="width: 90%; max-width: 400px; height: auto;">
+                <h2>🔄 Profilváltás</h2>
+                <button class="close-btn" id="closeSwitch">✖</button>
+                <div id="profileListContainer">
+                    ${userListHtml || '<p>Nincs több tárolt profil.</p>'}
+                </div>
+                <button id="addProfile" style="width: 100%; margin-top: 15px;">+ Új profil hozzáadása (Login)</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById('closeSwitch').addEventListener('click', () => overlay.remove());
+
+        // Profilra kattintva váltás
+        overlay.querySelectorAll('.profile-list-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const usernameToSwitch = item.dataset.username;
+                if (usernameToSwitch !== loggedUsername) {
+                    localStorage.setItem(LOGGED_IN_KEY, usernameToSwitch);
+                    overlay.remove();
+                    window.location.reload(); 
+                }
+            });
+        });
+        
+        // Új profil hozzáadása (átirányítás/modal újranyitás)
+        document.getElementById('addProfile').addEventListener('click', () => {
+            // Logikailag: kijelentkezünk és megnyitjuk a login modalt
+            handleLogout(); // Kijelentkezés, ami újratölti az oldalt
+        });
+    }
+
+    // --- 4. LOGOUT FUNKCIÓ ---
+
+    function handleLogout() {
+        localStorage.removeItem(LOGGED_IN_KEY);
+        // Eltávolítjuk a profil menüt (ha nyitva van)
+        if (profileOverlay) profileOverlay.remove();
+        // Visszavisz az oldalra, amin voltam (location.reload())
+        window.location.reload(); 
+    }
+    
+    // --- Eseménykezelők Csatolása ---
+    
+    // Mivel a profile.html-t a login.js tölti be, a login.js feladata az eseménykezelők csatolása.
+    // Miután a login.js betölti a profile.html tartalmát a DOM-ba, meg kell hívnia a külső initProfileMenu() függvényt.
+    // Mivel most EGY fájlként kezeljük:
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        // A gombokat a login.js hívása tölti be. Ezt a blokkot csak a hívás tesztelésére használjuk.
+        
+        // Ha a menü váz már a DOM-ban van, csatoljuk az eseményeket
+        if (document.getElementById('profileMenu')) {
+            document.getElementById('btnWatchList').addEventListener('click', () => {
+                // profileOverlay.remove(); // Bezárjuk a fő menüt, ha megnyitjuk az almenüt
+                showWatchlist();
+            });
+            document.getElementById('btnSettings').addEventListener('click', () => {
+                // profileOverlay.remove(); 
+                showSettings();
+            });
+            document.getElementById('btnSwitch').addEventListener('click', showSwitchProfile);
+            document.getElementById('btnLogout').addEventListener('click', handleLogout);
+        }
+    });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TVZone</title>
+  <style>
+    /* Basic reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #9d9eb127;
+      color: #333;
+      line-height: 1.6;
+      max-width: 1920px;
+      margin: 0 auto;
+    }
+
+    .hover:hover {
+      transform: scale(1.2);
+      transition: transform 0.2s ease-in-out, font-size 0.2s ease-in-out;
+    }
+
+    button {
+      list-style: none;
+      appearance: none;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      font-size: 22px;
+      font-weight: bold;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    header {
+      background-color: #122f6b;
+      color: #ffffff;
+      padding: 20px 0;
+    }
+
+    header .container {
+      max-width: 1920px;
+      margin: 0 auto;
+      padding: 0 15px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* LEFT SIDE: Logo + nav links */
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 35px;
+      /* egységes távolság a linkek között */
+      padding: 0 20px;
+      /* egyforma belső távolság a szélektől */
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      height: 60px;
+      padding-left: 20px;
+    }
+
+    .logo img {
+      height: 60px;
+      width: 90px;
+      margin-left: 20px;
+      stroke: #ffffff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      transform: scale(2.5);
+    }
+
+    .logo img:hover {
+      transform: scale(3);
+      margin-bottom: 5px;
+    }
+
+
+    /* CENTER: Search bar and nav styles */
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      /* egységes távolság a linkek között */
+      margin: 0;
+      /* eltávolítjuk az alap margin-t */
+      padding: 0;
+      /* eltávolítjuk az alap padding-et */
+    }
+
+    nav ul li a, nav ul li span {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 30px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    nav ul li a:hover {
+     transform: scale(1.5);
+    }
+
+    .nav-center {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      /* fixed: was 'center-100' */
+      padding: 0 10px;
+      min-width: 600px;
+      position: relative;
+      /* for icon positioning */
+      max-width: 400px;
+      /* control max width */
+      width: 100%;
+      /* full width in container */
+      /* if there is any margin-left causing the offset */
+
+    }
+
+    .nav-center input[type="search"] {
+      width: 100%;
+      padding: 8px 20px 8px 40px;
+      /* left padding for icon */
+      border: none;
+      border-radius: 4px;
+      font-size: 20px;
+      box-sizing: border-box;
+      outline: none;
+      color: #060316;
+    }
+
+    /* Search icon inside input */
+    .nav-center svg.search-icon {
+      position: absolute;
+      top: 45%;
+      left: 10px;
+      transform: translateY(-50%);
+      width: 25px;
+      height: 25px;
+      stroke: #060316;
+      pointer-events: none;
+      /* allows clicking input under icon */
+    }
+
+    #theme-toggle {
+      font-size: 90px;
+      /* 🔸 Itt állíthatod a méretet — pl. 24px, 28px, 32px */
+      height: 40px;
+      width: 40px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      transform: scale(2.5);
+      margin-right: 20px;
+      margin-top: 20px;
+    }
+
+    #theme-toggle:hover {
+      transform: scale(3.5);
+
+    }
+
+    /* RIGHT SIDE: Login button */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-right: 10px;
+      /* No need for extra spacing, gap handles it */
+    }
+
+    .nav-right ul {
+      list-style: none;
+      margin-right: 20px;
+      padding: 0;
+      display: flex;
+    }
+
+    .nav-right ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 30px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-right ul li a:hover {
+      transform: scale(1.5);
+    }
+
+    .login-btn {
+      background-color: transparent;
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 30px;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .login-btn:hover {
+      transform: scale(1.5);
+    }
+
+    /* Main content styling (your original styles) */
+    main {
+      max-width: 1920px;
+      margin: 40px auto;
+      padding: 0 15px;
+    }
+
+    section {
+      margin-bottom: 50px;
+    }
+
+    section h2 {
+      position: relative;
+      margin-left: 10px;
+      font-size: 35px;
+      color: #122f6b;
+      padding-bottom: 10px;
+      width: fit-content;
+    }
+
+    /* Lekerekített alsó szegély */
+    section h2::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 10px;
+      width: 120%;
+      background-color: #122f6b;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+
+    .carousel-wrapper {
+      position: relative;
+    }
+
+    .carousel {
+      overflow: hidden;
+      width: 1800px;
+      height: 500px;
+      margin: 0 auto;
+      /* EZ teszi középre */
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      gap: 10px;
+      margin-left: 5px;
+      /* Kiváltja a margin-right-ot */
+    }
+
+    .carousel-item {
+      flex: 0 0 calc((100% - 45px) / 5);
+      /* 5 elem között 4 rés van, azaz 4 * 10px = 40px */
+      background: #9d9eb127;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px #0000001a;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.3s ease; /* Smooth transition for filtering */
+    }
+
+    /* Ha a szűrő elrejti */
+    .carousel-item.hidden-item {
+        display: none !important;
+    }
+
+    .carousel-item img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .carousel-item .info {
+      padding: 12px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .carousel-item .info h3 {
+      font-size: 20px; 
+      margin-bottom: 6px;
+      color: #122f6b;
+      font-weight: bold;
+    }
+
+    .carousel-item .info p {
+      font-size: 18px; 
+      color: #173c88;
+      font-weight: bold;
+    }
+
+    .carousel-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(18, 47, 107, 0.7);
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 30px;
+      z-index: 10;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    .carousel-button:hover {
+      background-color: #122f6b;
+    }
+
+    .carousel-button.prev {
+      left: 0;
+    }
+
+    .carousel-button.next {
+      right: 0;
+    }
+
+    footer {
+      background-color: #122f6b;
+      color: #ccc;
+      padding: 25px 0;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    footer a {
+      color: #fff;
+      margin: 0 12px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media(max-width: 900px) {
+      .carousel-item img {
+        height: 220px;
+      }
+    }
+
+    @media(max-width: 700px) {
+      .carousel-item {
+        min-width: calc(100% / 3);
+      }
+    }
+
+    @media(max-width: 450px) {
+      .carousel-item {
+        min-width: calc(100% / 2);
+      }
+
+      header .container {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .nav-left,
+      .nav-center,
+      .nav-right {
+        flex-basis: 100%;
+        justify-content: center;
+      }
+
+      nav ul {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+    }
+
+        /* Dark mode styling */
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #060316;
+    }
+
+    body.dark-mode header {
+      background-color: #0a1b3f;
+      color: #b8b8b8;
+    }
+
+    body.dark-mode header .nav-center input[type="search"] {
+      background-color: #060316;
+      color: #b8b8b8;
+    }
+
+    body.dark-mode header .nav-center svg.search-icon {
+      color: #b8b8b8;
+    }
+
+    body.dark-mode header nav a,
+    body.dark-mode header .nav-right ul li a {
+      color: #b8b8b8;
+    }
+
+    body.dark-mode #theme-toggle {
+      fill: #b8b8b8;
+
+    }
+
+    body.dark-mode .login-btn {
+      color: #b8b8b8;
+    }
+
+    body.dark-mode .carousel-item .info h3 {
+      color: #283999;
+    }
+
+    /*color: #2b3ea7;
+      text-shadow:
+    -1px -1px 0 #6d7bca,  
+     1px -1px 0 #6d7bca,
+    -1px  1px 0 #6d7bca,
+     1px  1px 0 #6d7bca;*/
+
+    body.dark-mode .carousel-item .info p {
+      color: #283999;
+    }
+
+    body.dark-mode h2 {
+      color: #2c3c94;
+    }
+
+    body.dark-mode h2::after {
+      background-color: #2c3c94;
+    }
+
+    body.dark-mode .carousel-button.prev {
+      left: 0;
+      background-color: #151c7c;
+      color: #b8b8b8;
+    }
+
+    body.dark-mode .carousel-button.next {
+      right: 0;
+      background-color: #151c7c;
+      color: #b8b8b8;
+    }
+
+    footer {
+      background-color: #0a1b3f;
+      color: #b8b8b8;
+    }
+
+    footer a {
+      color: #b8b8b8;
+    }
+
+    /* --- FILTER POPUP STYLES --- */
+    .filter-container {
+        position: relative;
+    }
+
+    .filter-popup {
+        display: none; /* Alapból rejtett */
+        position: absolute;
+        top: 100%; /* A gomb alatt jelenik meg */
+        left: 0;
+        width: 600px; /* Széles ablak a sok műfaj miatt */
+        background-color: #0f2557; /* Sötétkék háttér, passzol a headerhez */
+        border: 1px solid #1f4a9e;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+        z-index: 1000;
+        margin-top: 10px;
+        cursor: default; /* Ne legyen kéz kurzor az üres helyeken */
+        color: #fff;
+        text-align: left; /* Reset text align for popup content */
+    }
+
+    .filter-popup.active {
+        display: block; /* Ha aktív, megjelenik */
+    }
+
+    /* Címkék stílusa a dobozon belül */
+    .filter-group h4 {
+        color: #fff;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #1f4a9e;
+        padding-bottom: 5px;
+        font-size: 18px;
+    }
+
+    .filter-group label {
+        display: block;
+        color: #ccc;
+        font-size: 16px;
+        cursor: pointer;
+        margin-bottom: 5px;
+    }
+
+    .filter-group label:hover {
+        color: #fff;
+    }
+
+    .filter-group input {
+        margin-right: 8px;
+        transform: scale(1.2);
+    }
+
+    /* Felső sor (Type, Quality, Released) elrendezése */
+    .filter-top-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .filter-divider {
+        border: 0;
+        border-top: 1px solid #1f4a9e;
+        margin: 20px 0;
+    }
+
+    /* Released Select box & Number Input Styling */
+    .filter-group select,
+    .filter-group input[type="number"] {
+        width: 100%;
+        padding: 5px;
+        border-radius: 4px;
+        border: none;
+        font-size: 16px;
+        background-color: #fff;
+        color: #333;
+    }
+
+    /* Genre (Műfaj) Grid elrendezés */
+    .genre-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 oszlopba rendezi */
+        gap: 10px;
+    }
+
+    /* Apply gomb */
+    .filter-actions {
+        margin-top: 20px;
+        text-align: right;
+    }
+
+    #apply-filter {
+        background-color: #1f4a9e;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: background 0.3s;
+        cursor: pointer;
+    }
+
+    #apply-filter:hover {
+        background-color: #2c5ebb;
+    }
+
+    /* Dark mode támogatás a filterhez is */
+    body.dark-mode .filter-popup {
+        background-color: #0a1b3f;
+        border-color: #333;
+    }
+  </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="nav-left">
+                <a href="home.html" class="logo">
+                    <img src="logo.png" alt="TVZone Logo" style="height: 50px;">
+                </a>
+
+                <nav>
+                    <ul>
+                        <li><a href="movies.html">Movies</a></li>
+                        <li><a href="series.html">Series</a></li>
+                        <li><a href="animes.html">Animes</a></li>
+                        
+                        <li class="filter-container">
+                            <a href="#" id="filter-btn">Filter &#9662;</a>
+                            <div id="filter-popup" class="filter-popup">
+                                <form id="filter-form">
+                                    <div class="filter-top-row">
+                                        <div class="filter-group">
+                                            <h4>Type</h4>
+                                            <label><input type="radio" name="type" value="all" checked> All</label>
+                                            <label><input type="radio" name="type" value="movies"> Movies</label>
+                                            <label><input type="radio" name="type" value="tv"> TV-series</label>
+                                        </div>
+
+                                        <div class="filter-group">
+                                            <h4>Quality</h4>
+                                            <label><input type="radio" name="quality" value="all" checked> All</label>
+                                            <label><input type="radio" name="quality" value="hd"> HD</label>
+                                            <label><input type="radio" name="quality" value="sd"> SD</label>
+                                            <label><input type="radio" name="quality" value="cam"> CAM</label>
+                                        </div>
+
+                                        <div class="filter-group">
+                                            <h4>Released</h4>
+                                            <input type="number" name="released" id="released-input" placeholder="e.g. 1990" min="1900" max="2099">
+                                        </div>
+                                    </div>
+
+                                    <hr class="filter-divider">
+
+                                    <div class="filter-group genre-group">
+                                        <h4>Genre</h4>
+                                        <div class="genre-grid">
+                                            <label><input type="checkbox" name="genre" value="action"> Action</label>
+                                            <label><input type="checkbox" name="genre" value="adventure"> Adventure</label>
+                                            <label><input type="checkbox" name="genre" value="animation"> Animation</label>
+                                            <label><input type="checkbox" name="genre" value="biography"> Biography</label>
+                                            <label><input type="checkbox" name="genre" value="comedy"> Comedy</label>
+                                            <label><input type="checkbox" name="genre" value="crime"> Crime</label>
+                                            <label><input type="checkbox" name="genre" value="documentary"> Documentary</label>
+                                            <label><input type="checkbox" name="genre" value="drama"> Drama</label>
+                                            <label><input type="checkbox" name="genre" value="family"> Family</label>
+                                            <label><input type="checkbox" name="genre" value="fantasy"> Fantasy</label>
+                                            <label><input type="checkbox" name="genre" value="history"> History</label>
+                                            <label><input type="checkbox" name="genre" value="horror"> Horror</label>
+                                            <label><input type="checkbox" name="genre" value="kids"> Kids</label>
+                                            <label><input type="checkbox" name="genre" value="music"> Music</label>
+                                            <label><input type="checkbox" name="genre" value="mystery"> Mystery</label>
+                                            <label><input type="checkbox" name="genre" value="news"> News</label>
+                                            <label><input type="checkbox" name="genre" value="reality"> Reality</label>
+                                            <label><input type="checkbox" name="genre" value="romance"> Romance</label>
+                                            <label><input type="checkbox" name="genre" value="sci-fi"> Sci-Fi</label>
+                                            <label><input type="checkbox" name="genre" value="thriller"> Thriller</label>
+                                            <label><input type="checkbox" name="genre" value="western"> Western</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="filter-actions">
+                                        <button type="button" id="apply-filter">Apply Filter</button>
+                                        <button type="button" id="reset-filter" style="margin-left: 10px; font-size: 16px; color: #aaa;">Reset</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="nav-center">
+                <input type="search" placeholder="Search..." />
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+
+            <div class="nav-right">
+                <svg id="theme-toggle" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffffff"
+                    viewBox="0 0 24 24" style="margin-left: 50px; cursor: pointer;">
+                    <path d="M21 12.79A9 9 0 0111.21 3 7 7 0 1021 12.79z"></path>
+                </svg>
+                <ul>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+                <button class="login-btn">Login</button>
+                <script src="login.js"></script>
+            </div>
+
+    </header>
+
+    <main>
+        
+        <section>
+    <h2>Trending</h2>
+    <div class="carousel-wrapper">
+        <button class="carousel-button prev" data-carousel="series">&#8249;</button>
+        <div class="carousel" id="carousel-series">
+            <div class="carousel-track">
+                
+              <div class="carousel-item" data-type="tv" data-year="2010" data-genre="crime" data-quality="sd">
+                    <img src="https://via.placeholder.com/200x450?text=Twin+Peaks" />
+                    <div class="info">
+                        <h3>Sherlock</h3>
+                        <p>Crime • 2010</p>
+                    </div>
+                </div>
+
+              <div class="carousel-item" data-type="tv" data-year="1971" data-genre="crime" data-quality="sd">
+                    <img src="https://via.placeholder.com/200x450?text=Columbo" />
+                    <div class="info">
+                        <h3>Columbo</h3>
+                        <p>Crime • 1971</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="1989" data-genre="sitcom" data-quality="sd">
+                    <img src="https://via.placeholder.com/200x450?text=The+Simpsons" />
+                    <div class="info">
+                        <h3>The Simpsons</h3>
+                        <p>Sitcom • 1989</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="1994" data-genre="sitcom" data-quality="sd">
+                    <img src="https://via.placeholder.com/200x450?text=Friends" />
+                    <div class="info">
+                        <h3>Friends</h3>
+                        <p>Sitcom • 1994</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="1999" data-genre="crime" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=The+Sopranos" />
+                    <div class="info">
+                        <h3>The Sopranos</h3>
+                        <p>Crime • 1999</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2002" data-genre="drama" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=The+Wire" />
+                    <div class="info">
+                        <h3>The Wire</h3>
+                        <p>Drama • 2002</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2005" data-genre="sitcom" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=The+Office" />
+                    <div class="info">
+                        <h3>The Office US</h3>
+                        <p>Sitcom • 2005</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2008" data-genre="crime" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Breaking+Bad" />
+                    <div class="info">
+                        <h3>Breaking Bad</h3>
+                        <p>crime • 2008</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2011" data-genre="fantasy" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Game+of+Thrones" />
+                    <div class="info">
+                        <h3>Game of Thrones</h3>
+                        <p>Fantasy • 2011</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2011" data-genre="sci-fi" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Black+Mirror" />
+                    <div class="info">
+                        <h3>Black Mirror</h3>
+                        <p>Sci-fi • 2011</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2013" data-genre="sci-fi" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Rick+and+Morty" />
+                    <div class="info">
+                        <h3>Rick and Morty</h3>
+                        <p>Sci-fi • 2013</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2015" data-genre="biography" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Narcos" />
+                    <div class="info">
+                        <h3>Narcos</h3>
+                        <p>Biography • 2015</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2016" data-genre="horror" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Stranger+Things" />
+                    <div class="info">
+                        <h3>Stranger Things</h3>
+                        <p>Horror • 2016</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2017" data-genre="thriller" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Mindhunter" />
+                    <div class="info">
+                        <h3>Mindhunter</h3>
+                        <p>Thriller • 2017</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2018" data-genre="drama" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Succession" />
+                    <div class="info">
+                        <h3>Succession</h3>
+                        <p>Drama • 2018</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2019" data-genre="history" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Chernobyl" />
+                    <div class="info">
+                        <h3>Chernobyl</h3>
+                        <p>History • 2019</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2021" data-genre="animation" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Arcane" />
+                    <div class="info">
+                        <h3>Arcane</h3>
+                        <p>Animation • 2021</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2022" data-genre="sci-fi" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=Severance" />
+                    <div class="info">
+                        <h3>Severance</h3>
+                        <p>Sci-fi • 2022</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item" data-type="tv" data-year="2023" data-genre="drama" data-quality="hd">
+                    <img src="https://via.placeholder.com/200x450?text=The+Last+of+Us" />
+                    <div class="info">
+                        <h3>The Last of Us</h3>
+                        <p>Drama • 2023</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <button class="carousel-button next" data-carousel="series">&#8250;</button>
+    </div>
+</section>
+
+        <section>
+            <h2>Latest Series</h2>
+            <div class="carousel-wrapper">
+                <button class="carousel-button prev" data-carousel="series">&#8249;</button>
+                <div class="carousel" id="carousel-series">
+                    <div class="carousel-track">
+                        <div class="carousel-item" data-type="tv" data-year="2024" data-genre="action" data-quality="hd">
+                            <img src="https://via.placeholder.com/200x450?text=Series+Action" />
+                            <div class="info">
+                                <h3>Series Action</h3>
+                                <p>Action • 2024</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" data-type="tv" data-year="2023" data-genre="drama" data-quality="hd">
+                            <img src="https://via.placeholder.com/200x450?text=Series+Drama" />
+                            <div class="info">
+                                <h3>Drama Life</h3>
+                                <p>Drama • 2023</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" data-type="tv" data-year="2022" data-genre="sci-fi" data-quality="sd">
+                            <img src="https://via.placeholder.com/200x450?text=Series+SciFi" />
+                            <div class="info">
+                                <h3>Star Trekking</h3>
+                                <p>Sci-Fi • 2022</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" data-type="tv" data-year="1999" data-genre="comedy" data-quality="sd">
+                            <img src="https://via.placeholder.com/200x450?text=Old+Comedy" />
+                            <div class="info">
+                                <h3>Friends Clone</h3>
+                                <p>Comedy • 1999</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" data-type="tv" data-year="2025" data-genre="thriller" data-quality="hd">
+                            <img src="https://via.placeholder.com/200x450?text=Series+Thriller" />
+                            <div class="info">
+                                <h3>Suspense TV</h3>
+                                <p>Thriller • 2025</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" data-type="tv" data-year="2010" data-genre="horror" data-quality="hd">
+                            <img src="https://via.placeholder.com/200x450?text=Series+Horror" />
+                            <div class="info">
+                                <h3>Scary Show</h3>
+                                <p>Horror • 2010</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" data-type="tv" data-year="2024" data-genre="action" data-quality="hd">
+                            <img src="https://via.placeholder.com/200x450?text=Series+Action+2" />
+                            <div class="info">
+                                <h3>Action Pack</h3>
+                                <p>Action • 2024</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" data-type="tv" data-year="2023" data-genre="drama" data-quality="hd">
+                            <img src="https://via.placeholder.com/200x450?text=Series+Drama+2" />
+                            <div class="info">
+                                <h3>Courtroom</h3>
+                                <p>Drama • 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-button next" data-carousel="series">&#8250;</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2024 TVZone. All rights reserved.
+        <br />
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+    </footer>
+
+    <script>
+    function openPreview(title, description) {
+      const previewOverlay = document.getElementById('previewOverlay');
+      const previewVideo = document.getElementById('previewVideo');
+      document.getElementById('previewTitle').textContent = title;
+      document.getElementById('previewDescription').textContent = description;
+      previewVideo.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
+      previewVideo.load();
+      previewVideo.play();
+      previewOverlay.style.display = 'flex';
+    }
+
+    function closePreview() {
+      const previewOverlay = document.getElementById('previewOverlay');
+      const previewVideo = document.getElementById('previewVideo');
+      previewVideo.pause();
+      previewOverlay.style.display = 'none';
+    }
+
+    function openFullVideo() {
+      closePreview();
+      const videoOverlay = document.getElementById('videoOverlay');
+      const mainVideo = document.getElementById('mainVideo');
+      mainVideo.src = `C:\\Users\\rdomi\\OneDrive - Nyíregyházi Egyetem (Student)\\TVZone\\data\\Movies\\${title}.mp4`;
+      mainVideo.load();
+      videoOverlay.style.display = 'block';
+      mainVideo.play();
+    }
+
+    function closeFullVideo() {
+      const videoOverlay = document.getElementById('videoOverlay');
+      const mainVideo = document.getElementById('mainVideo');
+      mainVideo.pause();
+      videoOverlay.style.display = 'none';
+    }
+
+    function togglePlay() {
+      const mainVideo = document.getElementById('mainVideo');
+      const playIcon = document.getElementById('playIcon');
+      if (mainVideo.paused) {
+        mainVideo.play();
+        playIcon.textContent = '❚❚';
+      } else {
+        mainVideo.pause();
+        playIcon.textContent = '▶';
+      }
+    }
+
+    function skipTime(seconds) {
+      const mainVideo = document.getElementById('mainVideo');
+      mainVideo.currentTime += seconds;
+    }
+
+    function toggleMenu(menuType) {
+      const menus = ['ccMenu', 'speedMenu', 'qualityMenu'];
+      menus.forEach(menu => {
+        const element = document.getElementById(menu);
+        if (menu === menuType + 'Menu') {
+          element.classList.toggle('active');
+        } else {
+          element.classList.remove('active');
+        }
+      });
+    }
+
+    function setSpeed(speed) {
+      const mainVideo = document.getElementById('mainVideo');
+      mainVideo.playbackRate = speed;
+      document.querySelector('[title="Speed"]').textContent = speed + 'x';
+      toggleMenu('speed');
+    }
+
+    function setQuality(quality) {
+      document.querySelector('[title="Quality"]').textContent = quality;
+      toggleMenu('quality');
+    }
+
+    function updateCCStyle(property, value) {
+      const track = document.getElementById('mainVideo').textTracks[0];
+    }
+
+    function toggleReaction(type) {
+      const button = document.querySelector(`[title="${type === 'superlike' ? 'Super Like' : type === 'like' ? 'Like' : 'Dislike'}"]`);
+      button.classList.toggle('active');
+    }
+
+    function toggleWatchlist() {
+      const button = document.querySelector('[title="Add to Watchlist"]');
+      button.classList.toggle('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const mainVideo = document.getElementById('mainVideo');
+      if (document.getElementById('videoOverlay').style.display === 'block') {
+        switch(e.key.toLowerCase()) {
+          case ' ': e.preventDefault(); togglePlay(); break;
+          case 'f': e.preventDefault(); if (!document.fullscreenElement) { document.getElementById('videoOverlay').requestFullscreen(); } else { document.exitFullscreen(); } break;
+          case 'escape': if (document.fullscreenElement) { document.exitFullscreen(); } else { closeFullVideo(); } break;
+          case 'arrowleft': case 'a': skipTime(-5); break;
+          case 'arrowright': case 'd': skipTime(5); break;
+        }
+      }
+    });
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      seconds = Math.floor(seconds % 60);
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+  </script>
+
+  <script>
+  // === Carousel functionality merged with Filter Logic ===
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    // --- 1. KERESÉS (SEARCH) LOGIKA ---
+    const searchInput = document.querySelector('.nav-center input[type="search"]');
+    
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase().trim();
+        const allItems = document.querySelectorAll('.carousel-item');
+
+        allItems.forEach(item => {
+            // Megkeressük a címet a kártyán belül
+            const title = item.querySelector('.info h3').textContent.toLowerCase();
+            
+            // Ha a címben benne van a keresett szöveg, vagy üres a mező -> látható
+            if (title.includes(searchTerm) || searchTerm === '') {
+                item.classList.remove('hidden-item');
+            } else {
+                item.classList.add('hidden-item');
+            }
+        });
+
+        // Keresés után újra kell rendezni a carouseleket (vissza az elejére)
+        const event = new Event('filterApplied');
+        document.dispatchEvent(event);
+    });
+
+
+    // --- 2. CAROUSEL Logic (Végtelenített + Filter-aware) ---
+    document.querySelectorAll('.carousel-wrapper').forEach(wrapper => {
+        const track = wrapper.querySelector('.carousel-track');
+        const prevButton = wrapper.querySelector('.carousel-button.prev');
+        const nextButton = wrapper.querySelector('.carousel-button.next');
+        
+        let currentIndex = 0;
+
+        function updateCarousel() {
+            // Csak a látható (nem kiszűrt) elemeket vesszük figyelembe
+            const items = Array.from(wrapper.querySelectorAll('.carousel-item'));
+            const visibleItems = items.filter(item => !item.classList.contains('hidden-item'));
+            
+            // Ha nincs találat, ne csússzon el
+            if (visibleItems.length === 0) {
+                track.style.transform = `translateX(0px)`;
+                return;
+            }
+
+            // Számítások
+            const itemWidth = items[0].getBoundingClientRect().width + 10; // + gap
+            const containerWidth = wrapper.querySelector('.carousel').offsetWidth;
+            const visibleCount = Math.floor(containerWidth / itemWidth); // Hány elem fér ki egyszerre
+            const maxIndex = Math.max(0, visibleItems.length - visibleCount); // Utolsó érvényes index
+
+            // Ha a jelenlegi index túl nagy (pl. szűrés miatt), korrigáljuk
+            if (currentIndex > maxIndex) currentIndex = 0;
+            
+            track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+        }
+
+        // BALRA NYÍL (PREV) - Végtelenítve
+        prevButton.addEventListener('click', () => {
+            const items = wrapper.querySelectorAll('.carousel-item:not(.hidden-item)');
+            if (items.length === 0) return;
+
+            const itemWidth = items[0].getBoundingClientRect().width + 10;
+            const containerWidth = wrapper.querySelector('.carousel').offsetWidth;
+            const visibleCount = Math.floor(containerWidth / itemWidth);
+            const maxIndex = Math.max(0, items.length - visibleCount);
+
+            if (currentIndex > 0) {
+                currentIndex--; // Normál lépés balra
+            } else {
+                currentIndex = maxIndex; // Ugrás a végére (Loop)
+            }
+            
+            track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+        });
+
+        // JOBBRA NYÍL (NEXT) - Végtelenítve
+        nextButton.addEventListener('click', () => {
+            const items = wrapper.querySelectorAll('.carousel-item:not(.hidden-item)');
+            if (items.length === 0) return;
+
+            const itemWidth = items[0].getBoundingClientRect().width + 10;
+            const containerWidth = wrapper.querySelector('.carousel').offsetWidth;
+            const visibleCount = Math.floor(containerWidth / itemWidth);
+            const maxIndex = Math.max(0, items.length - visibleCount);
+
+            if (currentIndex < maxIndex) {
+                currentIndex++; // Normál lépés jobbra
+            } else {
+                currentIndex = 0; // Ugrás az elejére (Loop)
+            }
+
+            track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+        });
+
+        window.addEventListener('resize', updateCarousel);
+        
+        // Globális eseményfigyelő (Search vagy Filter használatakor reset)
+        document.addEventListener('filterApplied', () => {
+            currentIndex = 0; 
+            updateCarousel();
+        });
+    });
+    const filterBtn = document.getElementById("filter-btn");
+    const filterPopup = document.getElementById("filter-popup");
+    const applyBtn = document.getElementById("apply-filter");
+    const resetBtn = document.getElementById("reset-filter");
+
+    // Toggle Popup
+    filterBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        filterPopup.classList.toggle("active");
+    });
+
+    // Close on click outside
+    document.addEventListener("click", (e) => {
+        if (!filterBtn.contains(e.target) && !filterPopup.contains(e.target)) {
+            filterPopup.classList.remove("active");
+        }
+    });
+
+    // APPLY FILTER FUNKCIÓ
+    applyBtn.addEventListener("click", () => {
+        // Értékek kinyerése
+        const type = document.querySelector('input[name="type"]:checked').value; 
+        const quality = document.querySelector('input[name="quality"]:checked').value; 
+        const yearInput = document.getElementById('released-input').value; 
+        
+        // Checkboxok
+        const selectedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(cb => cb.value);
+
+        console.log("Filtering:", { type, quality, yearInput, selectedGenres });
+
+        // Minden kártya ellenőrzése
+        const allItems = document.querySelectorAll('.carousel-item');
+        let matchCount = 0;
+
+        allItems.forEach(item => {
+            // Adatok lekérése a HTML attribútumokból
+            const itemType = item.dataset.type || ""; 
+            const itemYear = parseInt(item.dataset.year) || 0;
+            const itemGenreRaw = item.dataset.genre || ""; 
+            const itemQuality = item.dataset.quality || "";
+
+            let isMatch = true;
+
+            // --- TYPE CHECK ---
+            if (type !== 'all' && itemType !== type) {
+                isMatch = false;
+            }
+
+            // --- QUALITY CHECK ---
+            if (quality !== 'all' && itemQuality !== quality) {
+                isMatch = false;
+            }
+
+            // --- YEAR CHECK (Released After) ---
+            if (yearInput) {
+                const minYear = parseInt(yearInput);
+                if (itemYear < minYear) {
+                    isMatch = false; 
+                }
+            }
+
+            // --- GENRE CHECK ---
+            if (selectedGenres.length > 0) {
+                const itemHasGenre = selectedGenres.includes(itemGenreRaw);
+                if (!itemHasGenre) {
+                    isMatch = false;
+                }
+            }
+
+            // Megjelenítés / Elrejtés
+            if (isMatch) {
+                item.classList.remove('hidden-item');
+                matchCount++;
+            } else {
+                item.classList.add('hidden-item');
+            }
+        });
+
+        // Bezárjuk a popupot
+        filterPopup.classList.remove("active");
+        
+        // Értesítjük a carouselt
+        const event = new Event('filterApplied');
+        document.dispatchEvent(event);
+
+        if (matchCount === 0) {
+            alert("No results found for these filters.");
+        }
+    });
+
+    // RESET FILTER
+    resetBtn.addEventListener("click", () => {
+        document.getElementById("filter-form").reset();
+        document.querySelectorAll('.carousel-item').forEach(item => item.classList.remove('hidden-item'));
+        const event = new Event('filterApplied');
+        document.dispatchEvent(event);
+    });
+
+    // Dark Mode Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+
+    // --- CAROUSEL CLICK (Details page) ---
+    // (Ez az eredeti logikád része volt)
+    document.querySelectorAll('.carousel-item').forEach(item => {
+        item.addEventListener('click', async () => {
+            const title = item.querySelector('h3').textContent.trim();
+            console.log('Clicked series:', title); 
+            try {
+                const episodesData = await scanSeriesDirectory(title);
+                console.log('Scanned episodes data:', episodesData); 
+                if (episodesData && Object.keys(episodesData).length > 0) {
+                    const queryParams = new URLSearchParams({
+                        title: title,
+                        episodes: JSON.stringify(episodesData)
+                    });
+                    const url = 'details.html?' + queryParams.toString();
+                    location.href = url;
+                } else {
+                    const url = 'details.html?title=' + encodeURIComponent(title);
+                    location.href = url;
+                }
+            } catch (error) {
+                console.error('Error handling series click:', error);
+                const url = 'details.html?title=' + encodeURIComponent(title);
+                location.href = url;
+            }
+        });
+    });
+  });
+
+  // === Series Directory Scanner ===
+  async function scanSeriesDirectory(title) {
+    try {
+      const resp = await fetch(`http://localhost:3000/api/scan?title=${encodeURIComponent(title)}`);
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      if (data && data.episodes) return data.episodes;
+      return null;
+    } catch (err) {
+      console.error('Error calling scan API:', err);
+      return null;
+    }
+  }
+
+  async function fetchSeries(title) {
+    try {
+        const resp = await fetch(`http://localhost:3000/api/series?title=${encodeURIComponent(title)}`);
+        if (!resp.ok) return null;
+        return await resp.json();
+    } catch (err) {
+        return null;
+    }
+  }
+
+  function openEpisodePlayer(ep, seasonKey, episodeIndex) {
+    const videoOverlay = document.getElementById('videoOverlay');
+    const mainVideo = document.getElementById('mainVideo');
+    const titleElem = document.getElementById('videoTitle');
+    const descElem = document.getElementById('videoDescription');
+    const videoUrl = `http://localhost:3000${ep.path}`;
+    mainVideo.src = videoUrl;
+    titleElem.textContent = `${seasonKey} • Episode ${episodeIndex + 1}`;
+    descElem.textContent = ep.name || '';
+    videoOverlay.style.display = 'block';
+    mainVideo.load();
+    mainVideo.pause();
+    alert(`${seasonKey} E${episodeIndex + 1} betöltve`);
+  }
+
+  function closeEpisodePlayer() {
+    const videoOverlay = document.getElementById('videoOverlay');
+    const mainVideo = document.getElementById('mainVideo');
+    mainVideo.pause();
+    videoOverlay.style.display = 'none';
+  }
+</script>
+
+<div class="video-overlay" id="videoOverlay" style="display:none;">
+  <button class="close-btn" onclick="closeEpisodePlayer()">✕</button>
+  <div class="video-container">
+    <video id="mainVideo" class="main-video" controls>
+      <source src="" type="video/mkv" />
+    </video>
+    <div class="controls">
+      <button onclick="togglePlay()"><span id="playIcon">▶</span></button>
+      <div><span id="currentTime">0:00</span> / <span id="duration">0:00</span></div>
+    </div>
+  </div>
+  <div class="video-info">
+    <h2 id="videoTitle"></h2>
+    <p id="videoDescription"></p>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="login.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".carousel-item").forEach(item => {
+        const title = item.querySelector("h3")?.textContent.trim();
+        if (!title) return;
+        const img = item.querySelector("img");
+        if (!img) return;
+        const coverUrl = `http://localhost:3000/covers/${encodeURIComponent(title)}.jpg`;
+        const testImg = new Image();
+        testImg.onload = () => { img.src = coverUrl; };
+        testImg.onerror = () => { console.warn("❌ Nincs borító ehhez:", title); img.src = "default-thumbnail.png"; };
+        testImg.src = coverUrl;
+    });
+});
+</script>
+
+</body>
+</html>

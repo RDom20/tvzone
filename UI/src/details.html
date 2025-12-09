@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TVZone - Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* Basic reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #9d9eb127;
+      color: #333;
+      line-height: 1.6;
+      max-width: 1920px;
+      margin: 0 auto;
+    }
+
+    .hover:hover {
+      transform: scale(1.2);
+      transition: transform 0.2s ease-in-out, font-size 0.2s ease-in-out;
+    }
+
+    button {
+      list-style: none;
+      appearance: none;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      font-size: 22px;
+      font-weight: bold;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    header {
+      background-color: #122f6b;
+      color: #ffffff;
+      padding: 20px 0;
+    }
+
+    header .container {
+      max-width: 1920px;
+      margin: 0 auto;
+      padding: 0 15px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* LEFT SIDE: Logo + nav links */
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 35px;
+      /* egységes távolság a linkek között */
+      padding: 0 20px;
+      /* egyforma belső távolság a szélektől */
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      height: 60px;
+      padding-left: 20px;
+    }
+
+    .logo img {
+      height: 60px;
+      width: 90px;
+      margin-left: 20px;
+      stroke: #ffffff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      transform: scale(2.5);
+    }
+
+    .logo img:hover {
+      transform: scale(3);
+      margin-bottom: 5px;
+    }
+
+
+    /* CENTER: Search bar and nav styles */
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      /* egységes távolság a linkek között */
+      margin: 0;
+      /* eltávolítjuk az alap margin-t */
+      padding: 0;
+      /* eltávolítjuk az alap padding-et */
+    }
+
+    nav ul li a, nav ul li span {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 30px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    nav ul li a:hover {
+     transform: scale(1.5);
+    }
+
+    .nav-center {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      /* fixed: was 'center-100' */
+      padding: 0 10px;
+      min-width: 600px;
+      position: relative;
+      /* for icon positioning */
+      max-width: 400px;
+      /* control max width */
+      width: 100%;
+      /* full width in container */
+      /* if there is any margin-left causing the offset */
+
+    }
+
+    .nav-center input[type="search"] {
+      width: 100%;
+      padding: 8px 20px 8px 40px;
+      /* left padding for icon */
+      border: none;
+      border-radius: 4px;
+      font-size: 20px;
+      box-sizing: border-box;
+      outline: none;
+      color: #060316;
+    }
+
+    /* Search icon inside input */
+    .nav-center svg.search-icon {
+      position: absolute;
+      top: 45%;
+      left: 10px;
+      transform: translateY(-50%);
+      width: 25px;
+      height: 25px;
+      stroke: #060316;
+      pointer-events: none;
+      /* allows clicking input under icon */
+    }
+
+    #theme-toggle {
+      font-size: 90px;
+      /* 🔸 Itt állíthatod a méretet — pl. 24px, 28px, 32px */
+      height: 40px;
+      width: 40px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      transform: scale(2.5);
+      margin-right: 20px;
+      margin-top: 20px;
+    }
+
+    #theme-toggle:hover {
+      transform: scale(3.5);
+
+    }
+
+    /* RIGHT SIDE: Login button */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-right: 10px;
+      /* No need for extra spacing, gap handles it */
+    }
+
+    .nav-right ul {
+      list-style: none;
+      margin-right: 20px;
+      padding: 0;
+      display: flex;
+    }
+
+    .nav-right ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 30px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-right ul li a:hover {
+      transform: scale(1.5);
+    }
+
+    .login-btn {
+      background-color: transparent;
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 30px;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .login-btn:hover {
+      transform: scale(1.5);
+    }
+
+    /* Main content styling (your original styles) */
+    main {
+      max-width: 1920px;
+      margin: 40px auto;
+      padding: 0 15px;
+    }
+
+    section {
+      margin-bottom: 50px;
+    }
+
+    section h2 {
+      position: relative;
+      margin-left: 10px;
+      font-size: 35px;
+      color: #122f6b;
+      padding-bottom: 10px;
+      width: fit-content;
+    }
+
+    /* Lekerekített alsó szegély */
+    section h2::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 10px;
+      width: 120%;
+      background-color: #122f6b;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+
+    .carousel-wrapper {
+      position: relative;
+    }
+
+    .carousel {
+      overflow: hidden;
+      width: 1800px;
+      height: 500px;
+      margin: 0 auto;
+      /* EZ teszi középre */
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      gap: 10px;
+      margin-left: 5px;
+      /* Kiváltja a margin-right-ot */
+    }
+
+    .carousel-item {
+      flex: 0 0 calc((100% - 45px) / 5);
+      /* 5 elem között 4 rés van, azaz 4 * 10px = 40px */
+      background: #9d9eb127;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px #0000001a;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.3s ease; /* Smooth transition for filtering */
+    }
+
+    /* Ha a szűrő elrejti */
+    .carousel-item.hidden-item {
+        display: none !important;
+    }
+
+    .carousel-item img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .carousel-item .info {
+      padding: 12px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .carousel-item .info h3 {
+      font-size: 20px; 
+      margin-bottom: 6px;
+      color: #122f6b;
+      font-weight: bold;
+    }
+
+    .carousel-item .info p {
+      font-size: 18px; 
+      color: #173c88;
+      font-weight: bold;
+    }
+
+    .carousel-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(18, 47, 107, 0.7);
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 30px;
+      z-index: 10;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    .carousel-button:hover {
+      background-color: #122f6b;
+    }
+
+    .carousel-button.prev {
+      left: 0;
+    }
+
+    .carousel-button.next {
+      right: 0;
+    }
+
+    footer {
+      background-color: #122f6b;
+      color: #ccc;
+      padding: 25px 0;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    footer a {
+      color: #fff;
+      margin: 0 12px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+    
+    header .container {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+    
+    /* Dark mode styling */
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #060316;
+    }
+
+    body.dark-mode header {
+      background-color: #0a1b3f;
+      color: #b8b8b8;
+    }
+
+    body.dark-mode header .nav-center input[type="search"] {
+      background-color: #060316;
+      color: #b8b8b8;
+    }
+
+    body.dark-mode header .nav-center svg.search-icon {
+      color: #b8b8b8;
+    }
+
+    body.dark-mode header nav a,
+    body.dark-mode header .nav-right ul li a {
+      color: #b8b8b8;
+    }
+
+    body.dark-mode #theme-toggle {
+      fill: #b8b8b8;
+
+    }
+
+    body.dark-mode .login-btn {
+      color: #b8b8b8;
+    }
+
+
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .player-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      height: 600px;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 auto 20px auto;
+    }
+
+    .iframe-player { width:100%; height:100%; border:0; display:block; }
+
+    .player-overlay-play {
+      position:absolute;
+      left:50%; top:50%;
+      transform:translate(-50%, -50%);
+      width:120px; height:120px;
+      border-radius:50%;
+      background: #090de5f2;
+      display:flex; justify-content:center; align-items:center;
+      font-size:48px; color:white;
+      cursor:pointer; z-index:50;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      transition: transform 0.2s;
+    }
+
+    .player-overlay-play:hover { transform: translate(-50%, -50%) scale(1.05); }
+    .player-overlay-play.hidden { display:none; }
+
+    .btn-ep {
+      background:#222;
+      color:#fff;
+      border:1px solid #333;
+      padding:8px 14px;
+      border-radius:6px;
+      cursor:pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ep:hover { background:#333; }
+    .btn-ep.active { background:#0d09e5; transform: translateY(-2px); }
+
+    .seasons, .eps-list {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .content-info {
+      padding: 20px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, #1a1a1a 100%);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .reaction-btn { background:#222; border:none; color:#fff; border-radius:50%; padding:10px; margin-left:10px; }
+  </style>
+</head>
+
+<body>
+
+  <div class="container mt-3">
+    <div class="player-wrapper" id="playerWrapper">
+      <iframe id="playerIframe" class="iframe-player" src="" allowfullscreen allow="autoplay; picture-in-picture"></iframe>
+      <div class="player-overlay-play" id="overlayPlay">▶</div>
+    </div>
+
+    <div class="content-info">
+      <div class="buttons">
+        <button class="reaction-btn">👍</button>
+        <button class="reaction-btn">⭐</button>
+        <button class="reaction-btn">+ My List</button>
+      </div>
+      <div class="details">
+        <h1 class="title" id="infoTitle">Cím</h1>
+        <p class="description" id="infoDescription">Leírás</p>
+      </div>
+    </div>
+
+    <h3 class="section-title" id="sectionSeasonsTitle">Seasons</h3>
+    <div id="seasonsList" class="seasons"></div>
+
+    <h3 class="section-title" id="sectionEpisodesTitle">Episodes</h3>
+    <div id="episodesContainer" class="eps-list"></div>
+  </div>
+
+  <script>
+    // --- KONFIGURÁCIÓ ---
+    const API_BASE = 'http://localhost:3000';
+
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    const title = decodeURIComponent(getQueryParam('title') || '');
+    document.getElementById('infoTitle').textContent = title || 'Cím';
+
+    let mediaType = null;
+    let mediaData = null;
+    let episodesData = null;
+    let currentEp = null;
+
+    // UI Elemek elrejtése/megjelenítése
+    function toggleSeriesUI(show) {
+        const displayVal = show ? 'block' : 'none';
+        const displayFlex = show ? 'flex' : 'none';
+        
+        document.getElementById('sectionSeasonsTitle').style.display = displayVal;
+        document.getElementById('seasonsList').style.display = displayFlex;
+        document.getElementById('sectionEpisodesTitle').style.display = displayVal;
+        document.getElementById('episodesContainer').style.display = displayFlex;
+    }
+
+    async function fetchIfNeeded() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/series?title=${encodeURIComponent(title)}`);
+        if (!resp.ok) {
+          console.error("❌ Nem található:", title);
+          return;
+        }
+        const json = await resp.json();
+        mediaType = json.type;
+        mediaData = json;
+
+        if (mediaType === "movie") {
+          // FILM ESETÉN: Rejtsük el a sorozat UI elemeket
+          toggleSeriesUI(false);
+          
+          const movie = json.files[0];
+          loadMoviePlayer(movie);
+          return;
+        }
+        
+        if (mediaType === "series") {
+          // SOROZAT ESETÉN: Mutassuk a UI elemeket
+          toggleSeriesUI(true);
+          
+          episodesData = json.seasons;
+          renderSeasons();
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    }
+
+    function renderSeasons() {
+      const seasonsList = document.getElementById('seasonsList');
+      const episodesContainer = document.getElementById('episodesContainer');
+      seasonsList.innerHTML = '';
+      episodesContainer.innerHTML = '';
+
+      if (!episodesData) {
+        seasonsList.textContent = 'No seasons or episodes found.';
+        return;
+      }
+
+      const seasons = Object.keys(episodesData).sort((a,b) => {
+        const na = parseInt(a.match(/\d+/)?.[0] || '0', 10);
+        const nb = parseInt(b.match(/\d+/)?.[0] || '0', 10);
+        return na - nb;
+      });
+
+      seasons.forEach((season, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-ep';
+        btn.textContent = season;
+        btn.onclick = () => {
+          document.querySelectorAll('#seasonsList .btn-ep').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          showEpisodes(season);
+        };
+        seasonsList.appendChild(btn);
+        if (idx === 0) {
+          btn.classList.add('active');
+          showEpisodes(season);
+        }
+      });
+    }
+
+    function showEpisodes(seasonKey) {
+      const epContainer = document.getElementById('episodesContainer');
+      epContainer.innerHTML = '';
+      currentSeasonKey = seasonKey; // Aktualizáljuk a szezon kulcsot
+
+      // Minden alkalommal töröljük az aktuális epizód hivatkozást, 
+      // KIVÉVE, ha tudjuk, hogy az aktuális szezonhoz tartozik
+      if (currentEp && currentEp.seasonKey !== seasonKey) {
+          currentEp = null;
+      }
+
+      let episodes = episodesData[seasonKey] || [];
+      if (!episodes.length) {
+        epContainer.textContent = 'No episodes in this season.';
+        return;
+      }
+      
+      // JAVÍTÁS! --- Epizódok numerikus rendezése a fájlnévből kinyert E-szám alapján ---
+      episodes = episodes.sort((a, b) => {
+          const getEpNum = (epName) => {
+              const match = epName.match(/E(\d+)/i);
+              return match ? parseInt(match[1], 10) : 0;
+          };
+          const numA = getEpNum(a.name);
+          const numB = getEpNum(b.name);
+          return numA - numB;
+      });
+      // -----------------------------------------------------------------------------------
+
+      // Epizódok számozása és gombok létrehozása
+      episodes.forEach((ep, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-ep';
+        
+        // --- Epizód szám kinyerése a fájlnévből ---
+        const epNumMatch = ep.name.match(/E(\d+)/i);
+        // Ha sikertelen, használjuk a tömb indexet, de ez csak fallback
+        const epNum = epNumMatch ? parseInt(epNumMatch[1], 10) : (i + 1);
+
+        btn.textContent = `Ep ${epNum}`; 
+        btn.title = ep.name;
+        
+        btn.onclick = () => {
+          document.querySelectorAll('#episodesContainer .btn-ep').forEach(x => x.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // Eltároljuk az epizód adatok mellett a szezon kulcsot is
+          currentEp = { ...ep, seasonKey: seasonKey };
+          openEpisodePlayer(ep, seasonKey, epNum); 
+        };
+        epContainer.appendChild(btn);
+      });
+      
+      // --- Automatikus első epizód betöltése SZEZON VÁLTÁSKOR ---
+      if (episodes.length > 0) {
+        const firstEpNumMatch = episodes[0].name.match(/E(\d+)/i);
+        const firstEpNum = firstEpNumMatch ? parseInt(firstEpNumMatch[1], 10) : 1; 
+
+        // Betöltjük az első epizód lejátszóját
+        openEpisodePlayer(episodes[0], seasonKey, firstEpNum);
+        currentEp = { ...episodes[0], seasonKey: seasonKey };
+        
+        // Az első gombot tegyük aktívvá vizuálisan is
+        setTimeout(() => {
+            const firstBtn = epContainer.querySelector('.btn-ep');
+            if(firstBtn) firstBtn.classList.add('active');
+        }, 0);
+      }
+    }
+
+    // --- SEGÉDFÜGGVÉNY: Szóköz cseréje %20-ra ---
+    function encodeSpaces(str) {
+      return str.replace(/ /g, '%20');
+    }
+
+    // --- LEJÁTSZÓ BETÖLTÉSEK ---
+
+    function openEpisodePlayer(ep, seasonKey, i) {
+      const iframe = document.getElementById('playerIframe');
+      const overlay = document.getElementById('overlayPlay');
+
+      let rawPath = decodeURIComponent(ep.path || '');
+      let cleanPart = rawPath.match(/Series\/.*/i);
+      if (cleanPart) {
+        cleanPart = cleanPart[0].replace(/\\/g, "/");
+      } else {
+        console.error('❌ Nem található Series/ rész a pathban:', rawPath);
+        return;
+      }
+
+      const titleBase = ep.name.replace(/\.[^/.]+$/, '').trim();
+      const episodeTitle = ep.name?.replace(/\.[^/.]+$/, '') || `${title} - ${seasonKey} Episode ${i+1}`;
+      
+      document.getElementById('infoTitle').textContent = episodeTitle;
+      document.getElementById('infoDescription').textContent = ep.name || 'No description';
+
+      const videoFullSrc = `${API_BASE}/video/${encodeSpaces(cleanPart)}`;
+      
+      const subFileNameEng = titleBase + " Eng.vtt";
+      const subFileNameHun = titleBase + " Hun.vtt";
+      
+      const finalSubUrlEng = `${API_BASE}/subtitles/${encodeSpaces(subFileNameEng)}`;
+      const finalSubUrlHun = `${API_BASE}/subtitles/${encodeSpaces(subFileNameHun)}`;
+
+      setupIframe(videoFullSrc, episodeTitle, finalSubUrlEng, finalSubUrlHun);
+      overlay.classList.remove("hidden");
+    }
+
+    function loadMoviePlayer(movie) {
+      const overlay = document.getElementById("overlayPlay");
+
+      let moviePath = decodeURIComponent(movie.path || "");
+      moviePath = moviePath.replace(/\\/g, "/");
+      const cleanPath = moviePath.replace(/^\/?video\//i, "");
+      
+      const cleanTitle = movie.name.replace(/\.[^/.]+$/, "");
+
+      document.getElementById("infoTitle").textContent = cleanTitle; 
+
+      const videoFullSrc = `${API_BASE}/video/${encodeSpaces(cleanPath)}`;
+      
+      const subFileNameEng = cleanTitle + " Eng.vtt";
+      const subFileNameHun = cleanTitle + " Hun.vtt";
+
+      const finalSubUrlEng = `${API_BASE}/subtitles/${encodeSpaces(subFileNameEng)}`;
+      const finalSubUrlHun = `${API_BASE}/subtitles/${encodeSpaces(subFileNameHun)}`;
+
+      setupIframe(videoFullSrc, cleanTitle, finalSubUrlEng, finalSubUrlHun);
+      overlay.classList.remove("hidden");
+    }
+
+    // Közös Iframe beállító
+    function setupIframe(src, title, subEng, subHun) {
+      const iframe = document.getElementById("playerIframe");
+      iframe.src =
+        `http://localhost:3000/video-player.html?embedded=true` +
+        `&src=${encodeURIComponent(src)}` +
+        `&title=${encodeURIComponent(title)}` +
+        `&srt=${encodeURIComponent(subEng)}` + 
+        `&srt_hu=${encodeURIComponent(subHun)}`;
+    }
+
+    // details.html <script> rész vége felé:
+
+// overlay play gomb
+  // overlay play gomb
+  document.getElementById("overlayPlay").addEventListener("click", () => {
+    // Ellenőrizzük, hogy sorozat-e, és van-e kiválasztott epizód
+    if (mediaType === "series" && !currentEp) {
+        alert("Kérlek válassz egy epizódot a lejátszáshoz!");
+        return; // Ne indítsa el a lejátszót
+    }
+
+    const iframe = document.getElementById("playerIframe");
+    
+    // Ha nincs src beállítva (pl. még nem választott filmet/epizódot), ne küldjön üzenetet
+    if (!iframe.src || iframe.src === 'about:blank') {
+         if (mediaType === "movie") {
+             // Film esetén ez elvileg nem fordulhat elő, mert betöltéskor beállítjuk
+             console.warn("Nincs betöltve film.");
+         }
+         return;
+    }
+
+    if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ action: "play" }, "*");
+    }
+    document.getElementById("overlayPlay").classList.add("hidden");
+  });
+
+    fetchIfNeeded();
+  </script>
+</body>
+</html>
